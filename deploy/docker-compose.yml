@@ -1,0 +1,25 @@
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    environment:
+      MAVLINK_CONNECTION: udp:0.0.0.0:14550
+      ALLOW_ACTUATION: "false"
+    ports:
+      - "8000:8000"
+      - "14550:14550/udp"
+    volumes:
+      - ../logs:/app/logs
+
+  dashboard:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    command: streamlit run apps/dashboard.py --server.address=0.0.0.0
+    environment:
+      SKY_API_URL: http://api:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
